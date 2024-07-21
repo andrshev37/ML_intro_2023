@@ -1,0 +1,53 @@
+function task3()
+  draw_bsplines(-2, 2, 5);
+
+end
+function draw_bsplines(a, b, n)
+    % Генерація точок для рівномірного поділу відрізка [a, b]
+    X = linspace(a, b, n+1);
+
+    % Визначення кроку h
+    h = (b - a) / n;
+
+##    % Лінійний B-сплайн
+    linear_spline_x = [];
+    linear_spline_y = [];
+##    for k = 0:n
+##        x_vals = linspace(X(k+1)-h, X(k+1)+h, 100);
+##        y_vals = max(0, 1 - abs(x_vals - X(k+1)) / h);
+##        linear_spline_x = [linear_spline_x, x_vals];
+##        linear_spline_y = [linear_spline_y, y_vals];
+##    end
+
+    % Кубічний B-сплайн
+    cubic_spline_x = [];
+    cubic_spline_y = [];
+    for k = 0:n
+        x_vals = linspace(X(k+1)-h, X(k+1)+h, 100);
+        y_vals = zeros(size(x_vals));
+        % Визначення кубічного B-сплайну за умовами
+        for i = 1:length(x_vals)
+            x = abs(x_vals(i) - X(k+1)) / h;
+            if x <= 0.5
+                y_vals(i) = (2 - x^2) * x;
+            elseif x <= 1.5
+                y_vals(i) = ((2 - x)^3 - 4 * (1 - x)^3) / 6;
+            end
+        end
+        cubic_spline_x = [cubic_spline_x, x_vals];
+        cubic_spline_y = [cubic_spline_y, y_vals];
+    end
+
+    % Відображення результатів
+    figure;
+    plot(linear_spline_x, linear_spline_y, '-r', 'LineWidth', 2);
+    hold on;
+    plot(cubic_spline_x, cubic_spline_y, '-b', 'LineWidth', 2);
+    scatter(X, zeros(size(X)), 'ok', 'filled');
+    title('Лінійний та кубічний B-сплайни');
+    legend('Лінійний B-сплайн', 'Кубічний B-сплайн', 'Вузли поділу');
+    xlabel('X');
+    ylabel('Y');
+    grid on;
+    hold off;
+end
